@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 func main() {
@@ -10,6 +11,8 @@ func main() {
 	// in := stdin.Text()
 	// fmt.Print(in)
 	combinatin([]int{1, 2, 4}, []bool{false, false, false}, 0)
+
+	fmt.Println(createNum([]int{1, 2, 3}))
 }
 
 func combinatin(array []int, plusArray []bool, i int) {
@@ -33,6 +36,18 @@ func combinatin(array []int, plusArray []bool, i int) {
 	plusArray[i] = false
 }
 
-// func calcSum(array []int, plusArray []bool) int {
+// func calcSum(array []int, plusArray []bool, plusIndex int) int {
+// 	if plusIndex == len(plusArray)-1 {
 
+// 	}
 // }
+
+func createNum(array []int) int {
+	sum := 0
+	digit := 0
+	for i := len(array) - 1; 0 <= i; i-- {
+		sum += int(math.Pow10(digit)) * array[i]
+		digit++
+	}
+	return sum
+}
