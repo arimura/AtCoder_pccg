@@ -12,7 +12,11 @@ func main() {
 	// fmt.Print(in)
 	combinatin([]int{1, 2, 4}, []bool{false, false, false}, 0)
 
-	fmt.Println(createNum([]int{1, 2, 3}))
+	// fmt.Println(createNum([]int{1, 2, 3}))
+	// fmt.Println(calcSum([]int{1, 2}, []bool{true}, 0))
+	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{false, true}, 0))
+	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{true, false}, 0))
+	// fmt.Println(calcSum([]int{1, 2, 3, 4}, []bool{false, true, false}, 0))
 }
 
 func combinatin(array []int, plusArray []bool, i int) {
@@ -36,11 +40,17 @@ func combinatin(array []int, plusArray []bool, i int) {
 	plusArray[i] = false
 }
 
-// func calcSum(array []int, plusArray []bool, plusIndex int) int {
-// 	if plusIndex == len(plusArray)-1 {
+func calcSum(array []int, plusArray []bool, plusIndex int) int {
+	if plusIndex == len(plusArray) {
+		return createNum(array)
+	}
+	if plusArray[plusIndex] {
+		//plus
+		return createNum(array[:(plusIndex+1)]) + calcSum(array[(plusIndex+1):], plusArray, plusIndex+1)
+	}
+	return calcSum(array, plusArray, plusIndex+1)
 
-// 	}
-// }
+}
 
 func createNum(array []int) int {
 	sum := 0
