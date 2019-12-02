@@ -55,17 +55,34 @@ func main() {
 	}
 
 	// dump(problems)
-	print(problems)
+	permutation(problems, problems)
 }
 
-func permutation(problems *problem) {
-
+func permutation(cursor *problem, top *problem) {
+	if cursor.next == nil {
+		//last problem
+		print(top)
+		cursor.solved = true
+		print(top)
+		cursor.solved = false
+		return
+	}
+	permutation(cursor.next, top)
+	cursor.solved = true
+	permutation(cursor.next, top)
+	cursor.solved = false
 }
+
+// func sum(problems *problem) int {
+
+// }
 
 func print(problems *problem) {
 	fmt.Printf("(%d, %t), ", problems.point, problems.solved)
 	if problems.next != nil {
 		print(problems.next)
+	} else {
+		fmt.Println("")
 	}
 }
 
