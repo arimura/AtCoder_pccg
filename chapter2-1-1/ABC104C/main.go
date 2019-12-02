@@ -54,12 +54,24 @@ func main() {
 		}
 	}
 
-	dump(problems)
+	// dump(problems)
+	print(problems)
 }
 
-func dump(problem *problem) {
-	fmt.Println(problem)
-	if problem.next != nil {
-		dump(problem.next)
+func permutation(problems *problem) {
+
+}
+
+func print(problems *problem) {
+	fmt.Printf("(%d, %t), ", problems.point, problems.solved)
+	if problems.next != nil {
+		print(problems.next)
 	}
 }
+
+// func dump(problem *problem) {
+// 	fmt.Println(problem)
+// 	if problem.next != nil {
+// 		dump(problem.next)
+// 	}
+// }
