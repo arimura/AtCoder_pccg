@@ -21,14 +21,6 @@ func main() {
 	sum := 0
 	combinatin(array, plusArray, 0, &sum)
 	fmt.Println(sum)
-
-	// fmt.Println(createNum([]int{1, 2, 3}))
-	// fmt.Println(calcSum([]int{1, 2}, []bool{true}, 0))
-	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{false, false}, 0, 0))
-	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{false, true}, 0, 0))
-	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{true, false}, 0, 0))
-	// fmt.Println(calcSum([]int{1, 2, 3}, []bool{true, true}, 0, 0))
-	// fmt.Println(calcSum([]int{1, 2, 3, 4}, []bool{false, true, false}, 0, 0))
 }
 
 func combinatin(array []int, plusArray []bool, i int, sum *int) {
