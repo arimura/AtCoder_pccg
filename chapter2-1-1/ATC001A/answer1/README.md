@@ -1,0 +1,1 @@
+result: https://atcoder.jp/contests/atc001/submissions/8926146
