@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -85,11 +84,13 @@ func handleInput() (int, int, [][]string) {
 	for i := 0; i < h; i++ {
 		scanner.Scan()
 		row := strings.Split(scanner.Text(), "")
-		sIdx := sort.SearchStrings(row, "s")
-		if sIdx < len(row) {
-			x = sIdx
-			y = i
+		for sIdx, v := range row {
+			if v == "s" {
+				x = sIdx
+				y = i
+			}
 		}
+
 		c = append(c, row)
 	}
 	return y, x, c
