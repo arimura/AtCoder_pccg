@@ -26,8 +26,48 @@ func main() {
 
 	var continuousLand []point
 	dfs(landMap, landChecked, &lands, &continuousLand, land.y, land.x)
-	fmt.Println(lands)
-	fmt.Println(continuousLand)
+	fmt.Printf("lands: %v\n", lands)
+	fmt.Printf("continuousLand: %v\n", continuousLand)
+
+	land = dequeueAdjecentLand(&landMap, &lands, &continuousLand)
+	fmt.Printf("lands: %v\n", land)
+	dfs(landMap, landChecked, &lands, &continuousLand, land.y, land.x)
+	fmt.Printf("lands: %v\n", lands)
+	fmt.Printf("continuousLand: %v\n", continuousLand)
+
+	if len(lands) == 0 {
+		fmt.Println("Yes")
+		return
+	}
+	fmt.Println("No")
+}
+
+func dequeueAdjecentLand(landMap *[][]rune, lands, continuousLand *[]point) point {
+	var f point
+	for _, partOfContinuousLand := range *continuousLand {
+		for i, land := range *lands {
+			//check land is arouncd partOfContinuousLand
+			y := partOfContinuousLand.y - land.y
+			if y < 0 {
+				y = -y
+			}
+			x := partOfContinuousLand.x - land.x
+			if x < 0 {
+				x = -x
+			}
+
+			if y+x == 2 {
+				//found
+				f = (*lands)[i]
+				*lands = append((*lands)[:i], (*lands)[i+1:]...)
+
+				(*landMap)[partOfContinuousLand.y-((partOfContinuousLand.y-land.y)/2)][partOfContinuousLand.x-((partOfContinuousLand.x-land.x)/2)] = 'o'
+				fmt.Printf("new mapped x: %d, y %d", partOfContinuousLand.x-((partOfContinuousLand.x-land.x)/2), partOfContinuousLand.y-((partOfContinuousLand.y-land.y)/2))
+				return f
+			}
+		}
+	}
+	return f
 }
 
 func dfs(landMap [][]rune, landChecked [][]bool, lands, continuousLand *[]point, y, x int) {
