@@ -1,0 +1,1 @@
+result: https://atcoder.jp/contests/arc031/submissions/8955310
