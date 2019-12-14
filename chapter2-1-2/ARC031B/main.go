@@ -12,42 +12,44 @@ type point struct {
 }
 
 func main() {
-	landMap, _ := handleInput()
+	landMap, seaAreas, startY, startX := handleInput()
 
-	var landChecked [][]bool
-	for _, row := range landMap {
-		landChecked = append(landChecked, make([]bool, len(row)))
-	}
-
-	var x, y int
-	for yIdx, row := range landMap {
-		for xIdx, v := range row {
-			if v == 'o' {
-				y = yIdx
-				x = xIdx
-				break
-			}
+	for _, seaArea := range seaAreas {
+		landMap[seaArea.y][seaArea.x] = 'o'
+		var landChecked [][]bool
+		for _, row := range landMap {
+			landChecked = append(landChecked, make([]bool, len(row)))
 		}
-	}
-
-	f := false
-	if dfs(landMap, &landChecked, y, x, &f) {
-		fmt.Println("YES")
-		return
+		dfs(landMap, &landChecked, startY, startX)
+		if isAllChecked(landMap, landChecked) {
+			fmt.Println("YES")
+			return
+		}
+		landMap[seaArea.y][seaArea.x] = 'x'
 	}
 	fmt.Println("NO")
 }
 
-func uncheckedLandNum(landMap [][]rune, landChecked *[][]bool) int {
-	n := 0
+func isAllChecked(landMap [][]rune, landChecked [][]bool) bool {
 	for y, row := range landMap {
 		for x, v := range row {
-			if v == 'o' && !(*landChecked)[y][x] {
-				n++
+			if v == 'o' && !landChecked[y][x] {
+				return false
 			}
 		}
 	}
-	return n
+	return true
+}
+
+func dfs(landMap [][]rune, landChecked *[][]bool, y, x int) {
+	if y < 0 || x < 0 || len(landMap)-1 < y || len(landMap[0])-1 < x || landMap[y][x] == 'x' || (*landChecked)[y][x] {
+		return
+	}
+	(*landChecked)[y][x] = true
+	dfs(landMap, landChecked, y-1, x)
+	dfs(landMap, landChecked, y+1, x)
+	dfs(landMap, landChecked, y, x-1)
+	dfs(landMap, landChecked, y, x+1)
 }
 
 func copy(src [][]bool) [][]bool {
@@ -62,80 +64,27 @@ func copy(src [][]bool) [][]bool {
 	return copied
 }
 
-func dfs(landMap [][]rune, landChecked *[][]bool, y, x int, useFilling *bool) bool {
-	//check unchecked land exists
-	n := uncheckedLandNum(landMap, landChecked)
-	if n == 0 {
-		return true
-	}
-
-	if y < 0 || x < 0 || len(landMap)-1 < y || len(landMap[0])-1 < x || (*landChecked)[y][x] {
-		//out of range or alreadu checked
-		return false
-	}
-	//use filling
-	if landMap[y][x] == 'x' && !*useFilling {
-		fmt.Printf("on y:%d, x:%d by fullfilling\n", y, x)
-
-		copied := copy(*landChecked)
-
-		(*landChecked)[y][x] = true
-		*useFilling = true
-		if dfs(landMap, &copied, y+1, x, useFilling) {
-			return true
-		}
-		if dfs(landMap, &copied, y-1, x, useFilling) {
-			return true
-		}
-		if dfs(landMap, &copied, y, x-1, useFilling) {
-			return true
-		}
-		if dfs(landMap, &copied, y, x+1, useFilling) {
-			return true
-		}
-		*useFilling = false
-		(*landChecked)[y][x] = false
-		return false
-	}
-
-	if landMap[y][x] == 'x' {
-		//do nothing
-		return false
-	}
-
-	//on land
-	fmt.Printf("on y:%d, x:%d\n", y, x)
-	(*landChecked)[y][x] = true
-	if dfs(landMap, landChecked, y+1, x, useFilling) {
-		return true
-	}
-	if dfs(landMap, landChecked, y-1, x, useFilling) {
-		return true
-	}
-	if dfs(landMap, landChecked, y, x-1, useFilling) {
-		return true
-	}
-	if dfs(landMap, landChecked, y, x+1, useFilling) {
-		return true
-	}
-	return false
-}
-
-// handleInput return 2 dimensions rune([y][x]rune) .
-func handleInput() ([][]rune, []point) {
+// handleInput return 2 dimensions rune([y][x]rune) and slice of sea areas
+func handleInput() ([][]rune, []point, int, int) {
 	var landMap [][]rune
-	var lands []point
+	var searAreas []point
 	scanner := bufio.NewScanner(os.Stdin)
 	y := 0
+	startY := 0
+	startX := 0
 	for scanner.Scan() {
 		runes := []rune(scanner.Text())
 		for x, r := range runes {
+			if r == 'x' {
+				searAreas = append(searAreas, point{y, x})
+			}
 			if r == 'o' {
-				lands = append(lands, point{y, x})
+				startY = y
+				startX = x
 			}
 		}
 		landMap = append(landMap, runes)
 		y++
 	}
-	return landMap, lands
+	return landMap, searAreas, startY, startX
 }
