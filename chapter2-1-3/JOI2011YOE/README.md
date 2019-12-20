@@ -1,0 +1,1 @@
+result: https://atcoder.jp/contests/joi2011yo/submissions/9031161
