@@ -1,0 +1,1 @@
+result: https://atcoder.jp/contests/abc076/submissions/9530728
