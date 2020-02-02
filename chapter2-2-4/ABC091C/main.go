@@ -4,32 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 )
 
 type point struct {
 	x, y int
-}
-
-type pairCandidates struct {
-	red           point
-	blueCandidate map[point]bool
-}
-
-type byNumberOfCandidate []pairCandidates
-
-func (a byNumberOfCandidate) Len() int {
-	return len(a)
-}
-
-func (a byNumberOfCandidate) Less(i, j int) bool {
-	return len(a[i].blueCandidate) < len(a[j].blueCandidate)
-}
-
-func (a byNumberOfCandidate) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
+	next *[]*point
+	prev *[]*point
 }
 
 func main() {
@@ -37,62 +19,66 @@ func main() {
 	scanner.Scan()
 	l, _ := strconv.Atoi(scanner.Text())
 
-	redPoints := []point{}
-	bluePoints := []point{}
+	sPoint := &point{-1, -1, &[]*point{}, &[]*point{}}
+	tPoint := &point{-2, -2, &[]*point{}, &[]*point{}}
+
+	redPoints := []*point{}
 	idx := 0
 	for scanner.Scan() {
 		pointArray := strings.Split(scanner.Text(), " ")
 		x, _ := strconv.Atoi(pointArray[0])
 		y, _ := strconv.Atoi(pointArray[1])
 		if idx < l {
-			redPoints = append(redPoints, point{x, y})
+			r := point{x, y, &[]*point{}, &[]*point{}}
+			*sPoint.next = append(*(sPoint.next), &r)
+			redPoints = append(redPoints, &r)
 		} else {
-			bluePoints = append(bluePoints, point{x, y})
+			b := &point{x, y, &[]*point{tPoint}, &[]*point{}}
+			for _, r := range redPoints {
+				if r.x < x && r.y < y {
+					*r.next = append(*r.next, b)
+				}
+			}
 		}
 		idx++
 	}
 
-	blueCandidatesForRed := []pairCandidates{}
-	for _, r := range redPoints {
-		blueCandidates := map[point]bool{}
-		for _, b := range bluePoints {
-			if r.x < b.x && r.y < b.y {
-				blueCandidates[b] = true
-			}
-		}
-		blueCandidatesForRed = append(blueCandidatesForRed, pairCandidates{r, blueCandidates})
-	}
-
-	//sort
-	sort.Sort(byNumberOfCandidate(blueCandidatesForRed))
-
-	//reduce
-	pairCnt := 0
+	cnt := 0
+	current := sPoint
 	for {
-		fmt.Println(blueCandidatesForRed)
-		if len(blueCandidatesForRed) == 0 {
-			break
-		}
-
-		pairCandidate := blueCandidatesForRed[0]
-		blueCandidates := pairCandidate.blueCandidate
-		if len(blueCandidates) == 0 {
-			blueCandidatesForRed = blueCandidatesForRed[1:]
+		fmt.Printf("current: %v, pointer: %p\n", current, &current)
+		if current.x == -2 && current.y == -2 {
+			fmt.Println("t")
+			cnt++
+			current = sPoint
 			continue
 		}
-		var fixedBlue point
-		for p := range blueCandidates {
-			fixedBlue = p
-			break
-		}
-		pairCnt++
-		blueCandidatesForRed = blueCandidatesForRed[1:]
-		//remove fixedBlue from blueCandidates
-		for _, nextPairCandidate := range blueCandidatesForRed {
-			delete(nextPairCandidate.blueCandidate, fixedBlue)
+
+		fmt.Printf("next: %v\n", *current.next)
+		if len(*current.next) == 0 && len(*current.prev) == 0 {
+			fmt.Println("no next")
+			if len(*sPoint.next) == 0 {
+				break
+			}
+			current = sPoint
+			continue
 		}
 
-		sort.Sort(byNumberOfCandidate(blueCandidatesForRed))
+		if len(*current.next) != 0 {
+			prev := current
+			current = (*current.next)[0]
+			*prev.next = (*prev.next)[1:]
+			*current.prev = append(*current.prev, prev)
+			continue
+		}
+
+		if len(*current.prev) != 0 {
+			prev := current
+			current = (*current.prev)[0]
+			*prev.prev = (*prev.prev)[1:]
+			continue
+		}
 	}
-	fmt.Println(pairCnt)
+
+	fmt.Println(cnt)
 }
